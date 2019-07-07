@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.system.mapper.StudentDao">
+    <resultMap type="Student" id="StudentAndSelectCourseResultMap">
+
+        <!--配置映射的订单信息 property 的值应跟 该vo 的变量名相同 column 的值，应与对应的数据库 表字段名相同 -->
+        <id property="userid" column="userID"/>
+        <result property="username" column="userName"/>
+        <result property="sex" column="sex"/>
+        <result property="birthyear" column="birthYear"/>
+        <result property="grade" column="grade"/>
+        <result property="collegeid" column="collegeID"/>
+        <result property="image" column="image"/>
+        <!--collection 对关联查询到的多条记录映射到集合对象中 property： 将关联查询到的多条信息映射到 vo 哪个属性 ofType：映射到集合属性中 pojo 的类型 -->
+
+        <collection property="selectedCourseList" ofType="SelectedCourse">
+            <result property="courseid" column="courseID"/>
+            <result property="studentid" column="studentID"/>
+            <result property="mark" column="mark"/>
+
+            <!--配置映射的关系的课程信息-->
+            <association property="course" javaType="Course">
+                <id property="courseid" column="courseID"/>
+                <result property="coursename" column="courseName"/>
+                <result property="teacherid" column="teacherID"/>
+                <result property="coursetime" column="courseTime"/>
+                <result property="classroom" column="classRoom"/>
+                <result property="courseweek" column="courseWeek"/>
+                <result property="coursetype" column="courseType"/>
+                <result property="collegeid" column="collegeID"/>
+                <result property="score" column="score"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <select id="findStudentAndSelectCourseListById" resultMap="StudentAndSelectCourseResultMap" parameterType="Integer">
+SELECT student.*,selectedcourse.*,course.* FROM student,selectedcourse,course WHERE student.userID = #{id}
+AND student.userID = selectedcourse.studentID AND selectedcourse.courseID = course.courseID
+ </select>
+    <select id="showStudentInfo" parameterType="Integer" resultType="com.system.po.Student">
+        select * from student where userid=#{userid}
+    </select>
+    <update id="updateStudentInfo" parameterType="com.system.po.Student">
+        update student set username=#{username},sex=#{sex} where userid=#{userid}
+    </update>
+    <update id="upload" parameterType="com.system.po.Student">
+       update student set image=#{image} where userid=#{userid}
+    </update>
+</mapper>
